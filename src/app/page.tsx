@@ -16,7 +16,7 @@ export default function Home() {
     <main className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-12 px-4">
         <h1 className="text-3xl font-bold text-center mb-8">参考文献フォーマッター</h1>
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-10">
           <ReferenceForm onSubmit={handleFormSubmit} />
           
           {referenceData && (
