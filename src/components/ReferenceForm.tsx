@@ -120,7 +120,6 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                 巻（数字のみ）
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-2 text-gray-500">Vol.</span>
                 <input
                   type="text"
                   name="volume"
@@ -137,7 +136,6 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                 号（数字のみ）
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-2 text-gray-500">No.</span>
                 <input
                   type="text"
                   name="number"
@@ -157,7 +155,6 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                 ページ範囲（数字のみ）
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-2 text-gray-500">pp.</span>
                 <input
                   type="text"
                   name="pages"
