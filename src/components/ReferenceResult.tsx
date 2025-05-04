@@ -15,16 +15,15 @@ export default function ReferenceResult({ data }: ReferenceResultProps) {
     
     switch (data.type) {
       case ReferenceType.RESEARCH_REPORT:
-        return `${authorList}：${data.title}，${data.publisher}，${data.volume}, ${data.number}, ${data.pages} (${data.year})．`;
+        return `${authorList}：${data.title}，${data.publisher}，Vol.${data.volume}, No.${data.number}, pp.${data.pages} (${data.year})．`;
       
       case ReferenceType.JOURNAL:
-        return `${authorList}：${data.title}，${data.publisher}，${data.volume}, ${data.number}, ${data.pages}(${data.year})．`;
+        return `${authorList}：${data.title}，${data.publisher}，Vol.${data.volume}, No.${data.number}, pp.${data.pages}(${data.year})．`;
       
       case ReferenceType.BOOK:
         return `${authorList}：${data.title}，${data.bookPublisher} (${data.year})．`;
       
       case ReferenceType.URL:
-        // 日付をフォーマット (YYYY.MM.DD)
         const formattedDate = data.accessDate ? formatDate(data.accessDate) : '';
         return `${authorList}：${data.title}，入手先 "${data.url}" (${formattedDate} 確認)．`;
       
@@ -33,7 +32,6 @@ export default function ReferenceResult({ data }: ReferenceResultProps) {
     }
   };
   
-  // 日付を YYYY.MM.DD 形式にフォーマット
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -53,13 +51,13 @@ export default function ReferenceResult({ data }: ReferenceResultProps) {
   
   return (
     <div className="space-y-4">
-      <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-        <p className="font-mono text-sm break-words">{formattedText}</p>
+      <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+        <p className="font-mono text-lg break-words">{formattedText}</p>
       </div>
       
       <button
         onClick={copyToClipboard}
-        className="flex items-center justify-center gap-2 py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition"
+        className="flex items-center justify-center gap-2 py-3 px-6 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors shadow-sm font-medium"
       >
         {copied ? (
           <>

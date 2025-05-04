@@ -13,7 +13,6 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
     type: ReferenceType.RESEARCH_REPORT,
     authors: '',
     title: '',
-    publisher: '',
     volume: '',
     number: '',
     pages: '',
@@ -39,14 +38,20 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
     onSubmit(formData as ReferenceData);
   };
 
+  // 入力フォームのラベルとインプットのスタイル共通化
+  const inputGroupClass = "mb-5";
+  const labelClass = "block text-sm font-medium text-gray-700 mb-1";
+  const inputClass = "w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition";
+  const selectClass = "w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+      <div className={inputGroupClass}>
+        <label className={labelClass}>
           参考文献タイプ
         </label>
         <select
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          className={selectClass}
           value={referenceType}
           onChange={handleTypeChange}
         >
@@ -59,8 +64,8 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
       </div>
 
       {/* 共通フィールド */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+      <div className={inputGroupClass}>
+        <label className={labelClass}>
           著者（カンマ区切り）
         </label>
         <input
@@ -69,13 +74,13 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
           value={formData.authors}
           onChange={handleInputChange}
           placeholder="例: 山田太郎,佐藤次郎,鈴木三郎"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          className={inputClass}
           required
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+      <div className={inputGroupClass}>
+        <label className={labelClass}>
           タイトル
         </label>
         <input
@@ -84,7 +89,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
           value={formData.title}
           onChange={handleInputChange}
           placeholder="論文・研究報告・書籍のタイトル"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          className={inputClass}
           required
         />
       </div>
@@ -92,8 +97,8 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
       {/* 研究報告と論文誌に共通のフィールド */}
       {(referenceType === ReferenceType.RESEARCH_REPORT || referenceType === ReferenceType.JOURNAL) && (
         <>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className={inputGroupClass}>
+            <label className={labelClass}>
               出版元・掲載誌
             </label>
             <input
@@ -104,59 +109,68 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
               placeholder={referenceType === ReferenceType.RESEARCH_REPORT 
                 ? "例: 情報処理学会研究報告" 
                 : "例: 情報処理学会論文誌"}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className={inputClass}
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                巻（Volume）
+            <div className={inputGroupClass}>
+              <label className={labelClass}>
+                巻（数字のみ）
               </label>
-              <input
-                type="text"
-                name="volume"
-                value={formData.volume}
-                onChange={handleInputChange}
-                placeholder="例: Vol.59"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                required
-              />
+              <div className="relative">
+                <span className="absolute left-4 top-2 text-gray-500">Vol.</span>
+                <input
+                  type="text"
+                  name="volume"
+                  value={formData.volume}
+                  onChange={handleInputChange}
+                  placeholder="59"
+                  className={`${inputClass} pl-12`}
+                  required
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                号（Number）
+            <div className={inputGroupClass}>
+              <label className={labelClass}>
+                号（数字のみ）
               </label>
-              <input
-                type="text"
-                name="number"
-                value={formData.number}
-                onChange={handleInputChange}
-                placeholder="例: No.3"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                required
-              />
+              <div className="relative">
+                <span className="absolute left-4 top-2 text-gray-500">No.</span>
+                <input
+                  type="text"
+                  name="number"
+                  value={formData.number}
+                  onChange={handleInputChange}
+                  placeholder="3"
+                  className={`${inputClass} pl-12`}
+                  required
+                />
+              </div>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                ページ範囲
+            <div className={inputGroupClass}>
+              <label className={labelClass}>
+                ページ範囲（数字のみ）
               </label>
-              <input
-                type="text"
-                name="pages"
-                value={formData.pages}
-                onChange={handleInputChange}
-                placeholder="例: pp.992-1004"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                required
-              />
+              <div className="relative">
+                <span className="absolute left-4 top-2 text-gray-500">pp.</span>
+                <input
+                  type="text"
+                  name="pages"
+                  value={formData.pages}
+                  onChange={handleInputChange}
+                  placeholder="992-1004"
+                  className={`${inputClass} pl-12`}
+                  required
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className={inputGroupClass}>
+              <label className={labelClass}>
                 出版年
               </label>
               <input
@@ -164,8 +178,8 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                 name="year"
                 value={formData.year}
                 onChange={handleInputChange}
-                placeholder="例: 2020"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="2024"
+                className={inputClass}
                 required
               />
             </div>
@@ -176,8 +190,8 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
       {/* 書籍固有のフィールド */}
       {referenceType === ReferenceType.BOOK && (
         <>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className={inputGroupClass}>
+            <label className={labelClass}>
               出版社
             </label>
             <input
@@ -186,12 +200,12 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
               value={formData.bookPublisher}
               onChange={handleInputChange}
               placeholder="例: サイエンス社"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className={inputClass}
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className={inputGroupClass}>
+            <label className={labelClass}>
               出版年
             </label>
             <input
@@ -199,8 +213,8 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
               name="year"
               value={formData.year}
               onChange={handleInputChange}
-              placeholder="例: 2020"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="2024"
+              className={inputClass}
               required
             />
           </div>
@@ -210,8 +224,8 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
       {/* URL固有のフィールド */}
       {referenceType === ReferenceType.URL && (
         <>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className={inputGroupClass}>
+            <label className={labelClass}>
               URL
             </label>
             <input
@@ -219,13 +233,13 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
               name="url"
               value={formData.url}
               onChange={handleInputChange}
-              placeholder="例: https://www.example.com/article"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="https://www.example.com/article"
+              className={inputClass}
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className={inputGroupClass}>
+            <label className={labelClass}>
               参照日
             </label>
             <input
@@ -233,7 +247,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
               name="accessDate"
               value={formData.accessDate}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className={inputClass}
               required
             />
           </div>
@@ -243,7 +257,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
       <div>
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-md font-medium text-lg"
         >
           参考文献形式に変換
         </button>
