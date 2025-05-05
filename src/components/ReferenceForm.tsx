@@ -2,6 +2,16 @@
 
 import { useState } from 'react';
 import { ReferenceData, ReferenceType } from '@/types/reference';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { ja } from "date-fns/locale";
 
 interface ReferenceFormProps {
   onSubmit: (data: ReferenceData) => void;
@@ -21,16 +31,27 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
     url: '',
     accessDate: new Date().toISOString().split('T')[0]
   });
+  const [date, setDate] = useState<Date | undefined>(new Date());
 
-  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newType = e.target.value as ReferenceType;
+  const handleTypeChange = (value: string) => {
+    const newType = value as ReferenceType;
     setReferenceType(newType);
     setFormData(prev => ({ ...prev, type: newType }));
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    setDate(newDate);
+    if (newDate) {
+      setFormData(prev => ({
+        ...prev,
+        accessDate: newDate.toISOString().split('T')[0]
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,227 +59,200 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
     onSubmit(formData as ReferenceData);
   };
 
-  // 入力フォームのラベルとインプットのスタイル共通化
-  const inputGroupClass = "mb-5";
-  const labelClass = "block text-sm font-medium text-gray-700 mb-1";
-  const inputClass = "w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition";
-  const selectClass = "w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition";
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className={inputGroupClass}>
-        <label className={labelClass}>
-          参考文献タイプ
-        </label>
-        <select
-          className={selectClass}
-          value={referenceType}
-          onChange={handleTypeChange}
-        >
-          {Object.values(ReferenceType).map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-      </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xl text-center text-blue-800">参考文献情報を入力</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="type">参考文献タイプ</Label>
+            <Select
+              value={referenceType}
+              onValueChange={handleTypeChange}
+            >
+              <SelectTrigger id="type" className="w-full">
+                <SelectValue placeholder="タイプを選択" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.values(ReferenceType).map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      {/* 共通フィールド */}
-      <div className={inputGroupClass}>
-        <label className={labelClass}>
-          著者（カンマ区切り）
-        </label>
-        <input
-          type="text"
-          name="authors"
-          value={formData.authors}
-          onChange={handleInputChange}
-          placeholder="例: 山田太郎,佐藤次郎,鈴木三郎"
-          className={inputClass}
-          required
-        />
-      </div>
-
-      <div className={inputGroupClass}>
-        <label className={labelClass}>
-          タイトル
-        </label>
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleInputChange}
-          placeholder="論文・研究報告・書籍のタイトル"
-          className={inputClass}
-          required
-        />
-      </div>
-
-      {/* 研究報告と論文誌に共通のフィールド */}
-      {(referenceType === ReferenceType.RESEARCH_REPORT || referenceType === ReferenceType.JOURNAL) && (
-        <>
-          <div className={inputGroupClass}>
-            <label className={labelClass}>
-              出版元・掲載誌
-            </label>
-            <input
-              type="text"
-              name="publisher"
-              value={formData.publisher}
+          {/* 共通フィールド */}
+          <div className="space-y-2">
+            <Label htmlFor="authors">著者（カンマ区切り）</Label>
+            <Input
+              id="authors"
+              name="authors"
+              value={formData.authors}
               onChange={handleInputChange}
-              placeholder={referenceType === ReferenceType.RESEARCH_REPORT 
-                ? "例: 情報処理学会研究報告" 
-                : "例: 情報処理学会論文誌"}
-              className={inputClass}
+              placeholder="例：山田太郎,佐藤次郎,鈴木三郎"
               required
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className={inputGroupClass}>
-              <label className={labelClass}>
-                巻（数字のみ）
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="volume"
-                  value={formData.volume}
+          <div className="space-y-2">
+            <Label htmlFor="title">タイトル</Label>
+            <Input
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              placeholder="論文・研究報告・書籍のタイトル"
+              required
+            />
+          </div>
+
+          {/* 研究報告と論文誌に共通のフィールド */}
+          {(referenceType === ReferenceType.RESEARCH_REPORT || referenceType === ReferenceType.JOURNAL) && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="publisher">出版元・掲載誌</Label>
+                <Input
+                  id="publisher"
+                  name="publisher"
+                  value={formData.publisher}
                   onChange={handleInputChange}
-                  placeholder="59"
-                  className={`${inputClass} pl-12`}
+                  placeholder={referenceType === ReferenceType.RESEARCH_REPORT 
+                    ? "例：情報処理学会研究報告" 
+                    : "例：情報処理学会論文誌"}
                   required
                 />
               </div>
-            </div>
-            <div className={inputGroupClass}>
-              <label className={labelClass}>
-                号（数字のみ）
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="number"
-                  value={formData.number}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="volume">巻（数字のみ）</Label>
+                  <Input
+                    id="volume"
+                    name="volume"
+                    value={formData.volume}
+                    onChange={handleInputChange}
+                    placeholder="例：59"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="number">号（数字のみ）</Label>
+                  <Input
+                    id="number"
+                    name="number"
+                    value={formData.number}
+                    onChange={handleInputChange}
+                    placeholder="例：3"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="pages">ページ範囲（数字のみ）</Label>
+                  <Input
+                    id="pages"
+                    name="pages"
+                    value={formData.pages}
+                    onChange={handleInputChange}
+                    placeholder="例：992-1004"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="year">出版年</Label>
+                  <Input
+                    id="year"
+                    name="year"
+                    value={formData.year}
+                    onChange={handleInputChange}
+                    placeholder="例：2024"
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* 書籍固有のフィールド */}
+          {referenceType === ReferenceType.BOOK && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="bookPublisher">出版社</Label>
+                <Input
+                  id="bookPublisher"
+                  name="bookPublisher"
+                  value={formData.bookPublisher}
                   onChange={handleInputChange}
-                  placeholder="3"
-                  className={`${inputClass} pl-12`}
+                  placeholder="例：サイエンス社"
                   required
                 />
               </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className={inputGroupClass}>
-              <label className={labelClass}>
-                ページ範囲（数字のみ）
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="pages"
-                  value={formData.pages}
+              <div className="space-y-2">
+                <Label htmlFor="year">出版年</Label>
+                <Input
+                  id="year"
+                  name="year"
+                  value={formData.year}
                   onChange={handleInputChange}
-                  placeholder="992-1004"
-                  className={`${inputClass} pl-12`}
+                  placeholder="例：2024"
                   required
                 />
               </div>
-            </div>
-            <div className={inputGroupClass}>
-              <label className={labelClass}>
-                出版年
-              </label>
-              <input
-                type="text"
-                name="year"
-                value={formData.year}
-                onChange={handleInputChange}
-                placeholder="2024"
-                className={inputClass}
-                required
-              />
-            </div>
-          </div>
-        </>
-      )}
+            </>
+          )}
 
-      {/* 書籍固有のフィールド */}
-      {referenceType === ReferenceType.BOOK && (
-        <>
-          <div className={inputGroupClass}>
-            <label className={labelClass}>
-              出版社
-            </label>
-            <input
-              type="text"
-              name="bookPublisher"
-              value={formData.bookPublisher}
-              onChange={handleInputChange}
-              placeholder="例: サイエンス社"
-              className={inputClass}
-              required
-            />
-          </div>
-          <div className={inputGroupClass}>
-            <label className={labelClass}>
-              出版年
-            </label>
-            <input
-              type="text"
-              name="year"
-              value={formData.year}
-              onChange={handleInputChange}
-              placeholder="2024"
-              className={inputClass}
-              required
-            />
-          </div>
-        </>
-      )}
+          {/* URL固有のフィールド */}
+          {referenceType === ReferenceType.URL && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="url">URL</Label>
+                <Input
+                  id="url"
+                  name="url"
+                  type="url"
+                  value={formData.url}
+                  onChange={handleInputChange}
+                  placeholder="例：https://www.example.com/article"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="date">参照日</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, 'yyyy年MM月dd日', { locale: ja }) : 
+                      <span>日付を選択</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={handleDateChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </>
+          )}
 
-      {/* URL固有のフィールド */}
-      {referenceType === ReferenceType.URL && (
-        <>
-          <div className={inputGroupClass}>
-            <label className={labelClass}>
-              URL
-            </label>
-            <input
-              type="url"
-              name="url"
-              value={formData.url}
-              onChange={handleInputChange}
-              placeholder="https://www.example.com/article"
-              className={inputClass}
-              required
-            />
-          </div>
-          <div className={inputGroupClass}>
-            <label className={labelClass}>
-              参照日
-            </label>
-            <input
-              type="date"
-              name="accessDate"
-              value={formData.accessDate}
-              onChange={handleInputChange}
-              className={inputClass}
-              required
-            />
-          </div>
-        </>
-      )}
-
-      <div>
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-md font-medium text-lg"
-        >
-          参考文献形式に変換
-        </button>
-      </div>
-    </form>
+          <Button type="submit" className="w-full">
+            参考文献形式に変換
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
