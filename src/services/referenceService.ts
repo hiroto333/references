@@ -24,7 +24,7 @@ export class ReferenceService {
    * PDFから参考文献データを抽出する（将来的な実装用）
    * @param _file PDFファイル
    */
-  static async extractFromPdf(_file: File): Promise<Partial<ReferenceData>> {
+  static async extractFromPdf(): Promise<Partial<ReferenceData>> {
     // TODO: 実際のバックエンドAPIが実装されたら、ここでAPIを呼び出す
     return {
       authors: 'PDFから抽出された著者',
