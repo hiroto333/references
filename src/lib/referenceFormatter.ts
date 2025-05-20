@@ -1,4 +1,4 @@
-import { ReferenceData, ReferenceType } from '@/types/reference';
+import { ReferenceData, ReferenceType } from '../types/reference';
 
 /**
  * 参考文献データを指定された形式に変換する
