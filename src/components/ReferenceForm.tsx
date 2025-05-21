@@ -1,15 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { ReferenceData, ReferenceType } from '@/types/reference';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { ReferenceData, ReferenceType } from '../types/reference';
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Button } from "../components/ui/button";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "../components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
@@ -27,6 +27,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
     number: '',
     pages: '',
     year: '',
+    publisher: '',
     bookPublisher: '',
     url: '',
     accessDate: new Date().toISOString().split('T')[0]

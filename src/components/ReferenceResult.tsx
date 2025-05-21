@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { ReferenceData, ReferenceType } from '@/types/reference';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { ReferenceData, ReferenceType } from '../types/reference';
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import { CopyIcon, CheckIcon } from "lucide-react";
-import { formatReference } from '@/lib/referenceFormatter';
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "../components/ui/alert";
 import { toast } from "sonner";
 
 interface ReferenceResultProps {

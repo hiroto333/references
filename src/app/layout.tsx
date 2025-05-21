@@ -5,7 +5,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: '参考文献フォーマッター',
+  title: 'りふぁまる',
   description: 'URLやPDFから研究室指定の参考文献形式に変換するツール',
 };
 
