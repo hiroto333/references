@@ -21,7 +21,7 @@ export default function Home() {
       <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-2 text-blue-800">参考文献フォーマッター</h1>
+            <h1 className="text-4xl font-bold mb-2 text-blue-800">りふぁまる</h1>
             <p className="text-slate-600 max-w-2xl mx-auto">
               研究報告、論文誌、書籍、URLを簡単に引用形式に変換。伊藤研指定の参考文献形式に対応。
             </p>
@@ -45,7 +45,7 @@ export default function Home() {
                   </TabsTrigger>
                   <TabsTrigger value="bibtex" className="flex items-center gap-2" disabled>
                     <BookIcon className="h-4 w-4" />
-                    <span className="hidden sm:inline">BibTeXから変換</span>
+                    <span className="hidden sm:inline">参考文献一覧</span>
                   </TabsTrigger>
                 </TabsList>
                 
