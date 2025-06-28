@@ -1,64 +1,66 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import { ReferenceData, ReferenceType } from '../types/reference';
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Button } from "../components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "../components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
+import type React from "react"
+
+import { useState } from "react"
+import { type ReferenceData, ReferenceType } from "../types/reference"
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
+import { Input } from "../components/ui/input"
+import { Label } from "../components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
+import { Button } from "../components/ui/button"
+import { CalendarIcon } from "lucide-react"
+import { Calendar } from "../components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover"
+import { format } from "date-fns"
+import { ja } from "date-fns/locale"
 
 interface ReferenceFormProps {
-  onSubmit: (data: ReferenceData) => void;
+  onSubmit: (data: ReferenceData) => void
 }
 
 export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
-  const [referenceType, setReferenceType] = useState<ReferenceType>(ReferenceType.RESEARCH_REPORT);
+  const [referenceType, setReferenceType] = useState<ReferenceType>(ReferenceType.RESEARCH_REPORT)
   const [formData, setFormData] = useState<Partial<ReferenceData>>({
     type: ReferenceType.RESEARCH_REPORT,
-    authors: '',
-    title: '',
-    volume: '',
-    number: '',
-    pages: '',
-    year: '',
-    publisher: '',
-    bookPublisher: '',
-    url: '',
-    accessDate: new Date().toISOString().split('T')[0]
-  });
-  const [date, setDate] = useState<Date | undefined>(new Date());
+    authors: "",
+    title: "",
+    volume: "",
+    number: "",
+    pages: "",
+    year: "",
+    publisher: "",
+    bookPublisher: "",
+    url: "",
+    accessDate: new Date().toISOString().split("T")[0],
+  })
+  const [date, setDate] = useState<Date | undefined>(new Date())
 
   const handleTypeChange = (value: string) => {
-    const newType = value as ReferenceType;
-    setReferenceType(newType);
-    setFormData(prev => ({ ...prev, type: newType }));
-  };
+    const newType = value as ReferenceType
+    setReferenceType(newType)
+    setFormData((prev) => ({ ...prev, type: newType }))
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleDateChange = (newDate: Date | undefined) => {
-    setDate(newDate);
+    setDate(newDate)
     if (newDate) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        accessDate: newDate.toISOString().split('T')[0]
-      }));
+        accessDate: newDate.toISOString().split("T")[0],
+      }))
     }
-  };
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData as ReferenceData);
-  };
+    e.preventDefault()
+    onSubmit(formData as ReferenceData)
+  }
 
   return (
     <Card>
@@ -69,10 +71,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="type">参考文献タイプ</Label>
-            <Select
-              value={referenceType}
-              onValueChange={handleTypeChange}
-            >
+            <Select value={referenceType} onValueChange={handleTypeChange}>
               <SelectTrigger id="type" className="w-full">
                 <SelectValue placeholder="タイプを選択" />
               </SelectTrigger>
@@ -92,7 +91,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
             <Input
               id="authors"
               name="authors"
-              value={formData.authors}
+              value={formData.authors || ""}
               onChange={handleInputChange}
               placeholder="例：山田太郎,佐藤次郎,鈴木三郎"
               required
@@ -104,7 +103,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
             <Input
               id="title"
               name="title"
-              value={formData.title}
+              value={formData.title || ""}
               onChange={handleInputChange}
               placeholder="論文・研究報告・書籍のタイトル"
               required
@@ -119,11 +118,13 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                 <Input
                   id="publisher"
                   name="publisher"
-                  value={formData.publisher}
+                  value={formData.publisher || ""}
                   onChange={handleInputChange}
-                  placeholder={referenceType === ReferenceType.RESEARCH_REPORT 
-                    ? "例：情報処理学会研究報告" 
-                    : "例：情報処理学会論文誌"}
+                  placeholder={
+                    referenceType === ReferenceType.RESEARCH_REPORT
+                      ? "例：情報処理学会研究報告"
+                      : "例：情報処理学会論文誌"
+                  }
                   required
                 />
               </div>
@@ -134,7 +135,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                   <Input
                     id="volume"
                     name="volume"
-                    value={formData.volume}
+                    value={formData.volume || ""}
                     onChange={handleInputChange}
                     placeholder="例：59"
                     required
@@ -145,7 +146,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                   <Input
                     id="number"
                     name="number"
-                    value={formData.number}
+                    value={formData.number || ""}
                     onChange={handleInputChange}
                     placeholder="例：3"
                     required
@@ -159,7 +160,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                   <Input
                     id="pages"
                     name="pages"
-                    value={formData.pages}
+                    value={formData.pages || ""}
                     onChange={handleInputChange}
                     placeholder="例：992-1004"
                     required
@@ -170,7 +171,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                   <Input
                     id="year"
                     name="year"
-                    value={formData.year}
+                    value={formData.year || ""}
                     onChange={handleInputChange}
                     placeholder="例：2024"
                     required
@@ -188,7 +189,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                 <Input
                   id="bookPublisher"
                   name="bookPublisher"
-                  value={formData.bookPublisher}
+                  value={formData.bookPublisher || ""}
                   onChange={handleInputChange}
                   placeholder="例：サイエンス社"
                   required
@@ -199,7 +200,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                 <Input
                   id="year"
                   name="year"
-                  value={formData.year}
+                  value={formData.year || ""}
                   onChange={handleInputChange}
                   placeholder="例：2024"
                   required
@@ -217,7 +218,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                   id="url"
                   name="url"
                   type="url"
-                  value={formData.url}
+                  value={formData.url || ""}
                   onChange={handleInputChange}
                   placeholder="例：https://www.example.com/article"
                   required
@@ -227,22 +228,13 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
                 <Label htmlFor="date">参照日</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
+                    <Button variant="outline" className="w-full justify-start text-left font-normal bg-transparent">
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, 'yyyy年MM月dd日', { locale: ja }) : 
-                      <span>日付を選択</span>}
+                      {date ? format(date, "yyyy年MM月dd日", { locale: ja }) : <span>日付を選択</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={handleDateChange}
-                      initialFocus
-                    />
+                    <Calendar mode="single" selected={date} onSelect={handleDateChange} initialFocus />
                   </PopoverContent>
                 </Popover>
               </div>
@@ -255,5 +247,5 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
         </form>
       </CardContent>
     </Card>
-  );
+  )
 }
