@@ -7,7 +7,7 @@ import { Button } from "../components/ui/button"
 import { CopyIcon, CheckIcon, SaveIcon } from "lucide-react"
 import { Alert, AlertDescription } from "../components/ui/alert"
 import { toast } from "sonner"
-import { saveReference } from "@/actions/save-reference"
+import { useReferences } from "../hooks/useReferences"
 
 interface ReferenceResultProps {
   data: ReferenceData
@@ -16,6 +16,7 @@ interface ReferenceResultProps {
 export default function ReferenceResult({ data }: ReferenceResultProps) {
   const [copied, setCopied] = useState(false)
   const [saved, setSaved] = useState(false)
+  const { saveReference } = useReferences()
 
   const formatReference = (data: ReferenceData): string => {
     const authorList = data.authors

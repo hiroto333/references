@@ -8,14 +8,16 @@ import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Button } from "../components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
+import { Alert, AlertDescription } from "../components/ui/alert"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "sonner"
-import { LogInIcon, UserPlusIcon, UserIcon }  from "lucide-react"
+import { LogInIcon, UserPlusIcon, UserIcon, MailIcon, InfoIcon } from "lucide-react"
 
 export default function AuthForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false)
   const { signInAnonymously, signInWithEmail, signUp } = useAuth()
 
   const handleAnonymousSignIn = async () => {
@@ -60,10 +62,54 @@ export default function AuthForm() {
         description: error.message,
       })
     } else {
-      toast.success("アカウントを作成しました")
+      setShowEmailConfirmation(true)
+      toast.success("アカウントを作成しました", {
+        description: "確認メールをお送りしました",
+      })
     }
 
     setLoading(false)
+  }
+
+  if (showEmailConfirmation) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center py-12 px-4">
+        <div className="w-full max-w-md">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-center flex items-center justify-center gap-2">
+                <MailIcon className="h-5 w-5" />
+                メール確認
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert>
+                <InfoIcon className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>{email}</strong> に確認メールを送信しました。
+                  <br />
+                  <br />
+                  メール内のリンクをクリックしてアカウントを有効化してください。
+                  <br />
+                  <br />
+                  確認後、このページに戻ってログインできます。
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-2">
+                <Button onClick={() => setShowEmailConfirmation(false)} variant="outline" className="w-full">
+                  ログイン画面に戻る
+                </Button>
+                <Button onClick={handleAnonymousSignIn} className="w-full" disabled={loading}>
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  {loading ? "ログイン中..." : "とりあえずゲストで始める"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -146,6 +192,13 @@ export default function AuthForm() {
 
               <TabsContent value="signup">
                 <form onSubmit={handleSignUp} className="space-y-4">
+                  <Alert className="bg-blue-50 border-blue-200">
+                    <InfoIcon className="h-4 w-4" />
+                    <AlertDescription className="text-sm">
+                      アカウント作成後、確認メールが送信されます。メール内のリンクをクリックしてアカウントを有効化してください。
+                    </AlertDescription>
+                  </Alert>
+
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">メールアドレス</Label>
                     <Input
@@ -172,7 +225,6 @@ export default function AuthForm() {
                   <Button type="submit" className="w-full bg-transparent" variant="outline" disabled={loading}>
                     {loading ? "作成中..." : "アカウント作成"}
                   </Button>
-                  <p className="text-xs text-gray-500 text-center">データを永続的に保存したい場合におすすめ</p>
                 </form>
               </TabsContent>
             </Tabs>

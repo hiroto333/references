@@ -1,46 +1,19 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Checkbox } from "../components/ui/checkbox"
 import { CopyIcon, TrashIcon, CheckIcon, RefreshCwIcon, BookIcon } from "lucide-react"
-import { getReferences, deleteReference } from "@/actions/save-reference"
+import { useReferences } from "../hooks/useReferences"
 import { toast } from "sonner"
 import { Alert, AlertDescription } from "../components/ui/alert"
 
-interface Reference {
-  id: string
-  type: string
-  authors: string
-  title: string
-  formatted_text: string
-  created_at: string
-}
-
 export default function ReferenceList() {
-  const [references, setReferences] = useState<Reference[]>([])
+  const { references, loading, deleteReference, loadReferences } = useReferences()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
-
-  const loadReferences = async () => {
-    setLoading(true)
-    const result = await getReferences()
-    if (result.success && result.data) {
-      setReferences(result.data)
-    } else {
-      toast.error("参考文献の読み込みに失敗しました", {
-        description: result.error,
-      })
-    }
-    setLoading(false)
-  }
-
-  useEffect(() => {
-    loadReferences()
-  }, [])
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -76,7 +49,6 @@ export default function ReferenceList() {
   const handleDelete = async (id: string) => {
     const result = await deleteReference(id)
     if (result.success) {
-      setReferences((prev) => prev.filter((ref) => ref.id !== id))
       setSelectedIds((prev) => {
         const newSet = new Set(prev)
         newSet.delete(id)
