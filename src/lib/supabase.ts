@@ -11,6 +11,7 @@ export type Database = {
       user_references: {
         Row: {
           id: string
+          user_id: string
           type: string
           authors: string
           title: string
@@ -27,6 +28,7 @@ export type Database = {
         }
         Insert: {
           id?: string
+          user_id: string
           type: string
           authors: string
           title: string
@@ -43,6 +45,7 @@ export type Database = {
         }
         Update: {
           id?: string
+          user_id?: string
           type?: string
           authors?: string
           title?: string

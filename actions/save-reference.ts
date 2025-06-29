@@ -5,9 +5,20 @@ import type { ReferenceData } from "../src/types/reference"
 
 export async function saveReference(data: ReferenceData, formattedText: string) {
   try {
+    // 現在のユーザーを取得
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return { success: false, error: "認証が必要です" }
+    }
+
     const { data: result, error } = await supabase
       .from("user_references")
       .insert({
+        user_id: user.id,
         type: data.type,
         authors: data.authors,
         title: data.title,
@@ -38,7 +49,21 @@ export async function saveReference(data: ReferenceData, formattedText: string) 
 
 export async function getReferences() {
   try {
-    const { data, error } = await supabase.from("user_references").select("*").order("created_at", { ascending: false })
+    // 現在のユーザーを取得
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return { success: false, error: "認証が必要です" }
+    }
+
+    const { data, error } = await supabase
+      .from("user_references")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
 
     if (error) {
       console.error("Error fetching references:", error)
@@ -54,7 +79,17 @@ export async function getReferences() {
 
 export async function deleteReference(id: string) {
   try {
-    const { error } = await supabase.from("user_references").delete().eq("id", id)
+    // 現在のユーザーを取得
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return { success: false, error: "認証が必要です" }
+    }
+
+    const { error } = await supabase.from("user_references").delete().eq("id", id).eq("user_id", user.id)
 
     if (error) {
       console.error("Error deleting reference:", error)
