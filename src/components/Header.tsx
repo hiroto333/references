@@ -7,11 +7,20 @@ import { LogOutIcon, UserIcon, AlertCircleIcon } from "lucide-react"
 import { toast } from "sonner"
 
 export default function Header() {
-  const { user, signOut, isAnonymous } = useAuth()
+  const { user, signOutWithCleanup, isAnonymous } = useAuth()
 
   const handleSignOut = async () => {
-    await signOut()
-    toast.success("ログアウトしました")
+    if (isAnonymous) {
+      toast.loading("ゲストデータを削除中...")
+    }
+
+    await signOutWithCleanup()
+
+    if (isAnonymous) {
+      toast.success("ゲストデータを削除してログアウトしました")
+    } else {
+      toast.success("ログアウトしました")
+    }
   }
 
   return (
@@ -38,7 +47,7 @@ export default function Header() {
           </div>
           <Button onClick={handleSignOut} variant="outline" size="sm">
             <LogOutIcon className="h-4 w-4 mr-2" />
-            ログアウト
+            {isAnonymous ? "データ削除してログアウト" : "ログアウト"}
           </Button>
         </div>
       </div>

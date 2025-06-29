@@ -13,6 +13,7 @@ interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
+  signOutWithCleanup: () => Promise<void>
   isAnonymous: boolean
 }
 
@@ -67,6 +68,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut()
   }
 
+  const signOutWithCleanup = async (): Promise<void> => {
+    if (user && isAnonymous) {
+      try {
+        // 1. ユーザーの参考文献データを削除
+        await supabase.from("user_references").delete().eq("user_id", user.id)
+
+        // 2. サインアウト
+        await supabase.auth.signOut()
+
+        console.log("Guest data cleaned up on logout")
+      } catch (error) {
+        console.error("Error during cleanup on logout:", error)
+        // エラーが発生してもサインアウトは実行
+        await supabase.auth.signOut()
+      }
+    } else {
+      // 通常のユーザーは普通にサインアウト
+      await supabase.auth.signOut()
+    }
+  }
+
   const value = {
     user,
     loading,
@@ -74,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithEmail,
     signUp,
     signOut,
+    signOutWithCleanup,
     isAnonymous,
   }
 

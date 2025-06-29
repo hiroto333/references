@@ -11,11 +11,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { BookIcon, FileTextIcon, LinkIcon, NewspaperIcon, AlertCircleIcon } from "lucide-react"
 import { Toaster } from "../components/ui/sonner"
 import { useAuth } from "@/contexts/AuthContext"
+import { useGuestCleanup } from "../hooks/useGuestCleanup"
 import { Alert, AlertDescription } from "../components/ui/alert"
 
 export default function Home() {
   const [referenceData, setReferenceData] = useState<ReferenceData | null>(null)
   const { user, loading, isAnonymous } = useAuth()
+
+  // ゲストユーザーのクリーンアップフックを使用
+  useGuestCleanup()
 
   const handleFormSubmit = (data: ReferenceData) => {
     setReferenceData(data)
@@ -57,7 +61,9 @@ export default function Home() {
                   <AlertDescription>
                     <strong>ゲストモードで利用中</strong>
                     <br />
-                    データはブラウザに一時的に保存されます。永続的に保存したい場合は、メールアドレスでアカウントを作成してください。
+                    データはブラウザセッション中のみ保存されます。ログアウトやタブを閉じると自動的にデータが削除されます。
+                    <br />
+                    永続的に保存したい場合は、メールアドレスでアカウントを作成してください。
                   </AlertDescription>
                 </Alert>
               </div>
