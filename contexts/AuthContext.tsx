@@ -9,9 +9,11 @@ import type { User, AuthError } from "@supabase/supabase-js"
 interface AuthContextType {
   user: User | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signInAnonymously: () => Promise<{ error: AuthError | null }>
+  signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
+  isAnonymous: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -19,6 +21,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const isAnonymous = user?.is_anonymous ?? false
 
   useEffect(() => {
     // 初期認証状態を取得
@@ -38,7 +42,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signIn = async (email: string, password: string): Promise<{ error: AuthError | null }> => {
+  const signInAnonymously = async (): Promise<{ error: AuthError | null }> => {
+    const { error } = await supabase.auth.signInAnonymously()
+    return { error }
+  }
+
+  const signInWithEmail = async (email: string, password: string): Promise<{ error: AuthError | null }> => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -61,9 +70,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     loading,
-    signIn,
+    signInAnonymously,
+    signInWithEmail,
     signUp,
     signOut,
+    isAnonymous,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -10,19 +10,33 @@ import { Button } from "../components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "sonner"
-import { LogInIcon, UserPlusIcon } from "lucide-react"
+import { LogInIcon, UserPlusIcon, UserIcon }  from "lucide-react"
 
 export default function AuthForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
-  const { signIn, signUp } = useAuth()
+  const { signInAnonymously, signInWithEmail, signUp } = useAuth()
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleAnonymousSignIn = async () => {
+    setLoading(true)
+    const { error } = await signInAnonymously()
+
+    if (error) {
+      toast.error("ゲストログインに失敗しました", {
+        description: error.message,
+      })
+    } else {
+      toast.success("ゲストとしてログインしました")
+    }
+    setLoading(false)
+  }
+
+  const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
-    const { error } = await signIn(email, password)
+    const { error } = await signInWithEmail(email, password)
 
     if (error) {
       toast.error("ログインに失敗しました", {
@@ -46,9 +60,7 @@ export default function AuthForm() {
         description: error.message,
       })
     } else {
-      toast.success("アカウントを作成しました", {
-        description: "確認メールをお送りしました",
-      })
+      toast.success("アカウントを作成しました")
     }
 
     setLoading(false)
@@ -59,14 +71,37 @@ export default function AuthForm() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2 text-blue-800">りふぁまる</h1>
-          <p className="text-slate-600">ログインして参考文献を管理しましょう</p>
+          <p className="text-slate-600">参考文献を簡単に管理しましょう</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-center">アカウント</CardTitle>
+            <CardTitle className="text-center">ログイン</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
+            {/* ゲストログイン（推奨） */}
+            <div className="space-y-3">
+              <Button onClick={handleAnonymousSignIn} className="w-full" size="lg" disabled={loading}>
+                <UserIcon className="mr-2 h-5 w-5" />
+                {loading ? "ログイン中..." : "ゲストとして始める（推奨）"}
+              </Button>
+              <p className="text-xs text-gray-500 text-center">
+                アカウント作成不要で今すぐ使えます
+                <br />
+                ※ブラウザを閉じるとデータが消える場合があります
+              </p>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-muted-foreground">または</span>
+              </div>
+            </div>
+
+            {/* メールアドレスでのログイン */}
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin" className="flex items-center gap-2">
@@ -80,7 +115,7 @@ export default function AuthForm() {
               </TabsList>
 
               <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-4">
+                <form onSubmit={handleEmailSignIn} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signin-email">メールアドレス</Label>
                     <Input
@@ -103,8 +138,8 @@ export default function AuthForm() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "ログイン中..." : "ログイン"}
+                  <Button type="submit" className="w-full bg-transparent" variant="outline" disabled={loading}>
+                    {loading ? "ログイン中..." : "メールでログイン"}
                   </Button>
                 </form>
               </TabsContent>
@@ -134,9 +169,10 @@ export default function AuthForm() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button type="submit" className="w-full bg-transparent" variant="outline" disabled={loading}>
                     {loading ? "作成中..." : "アカウント作成"}
                   </Button>
+                  <p className="text-xs text-gray-500 text-center">データを永続的に保存したい場合におすすめ</p>
                 </form>
               </TabsContent>
             </Tabs>

@@ -8,13 +8,14 @@ import Header from "../components/Header"
 import AuthForm from "../components/AuthForm"
 import type { ReferenceData } from "../types/reference"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import { BookIcon, FileTextIcon, LinkIcon, NewspaperIcon } from "lucide-react"
+import { BookIcon, FileTextIcon, LinkIcon, NewspaperIcon, AlertCircleIcon } from "lucide-react"
 import { Toaster } from "../components/ui/sonner"
 import { useAuth } from "@/contexts/AuthContext"
+import { Alert, AlertDescription } from "../components/ui/alert"
 
 export default function Home() {
   const [referenceData, setReferenceData] = useState<ReferenceData | null>(null)
-  const { user, loading } = useAuth()
+  const { user, loading, isAnonymous } = useAuth()
 
   const handleFormSubmit = (data: ReferenceData) => {
     setReferenceData(data)
@@ -47,6 +48,20 @@ export default function Home() {
                 研究報告、論文誌、書籍、URLを簡単に引用形式に変換。伊藤研指定の参考文献形式に対応。
               </p>
             </div>
+
+            {/* 匿名ユーザー向けの注意書き */}
+            {isAnonymous && (
+              <div className="max-w-4xl mx-auto mb-6">
+                <Alert className="bg-yellow-50 border-yellow-200">
+                  <AlertCircleIcon className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>ゲストモードで利用中</strong>
+                    <br />
+                    データはブラウザに一時的に保存されます。永続的に保存したい場合は、メールアドレスでアカウントを作成してください。
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
 
             <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
               <div className="p-8">
