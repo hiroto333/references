@@ -93,7 +93,7 @@ export default function ReferenceForm({ onSubmit }: ReferenceFormProps) {
               name="authors"
               value={formData.authors || ""}
               onChange={handleInputChange}
-              placeholder="例：山田太郎,佐藤次郎,鈴木三郎"
+              placeholder="例：山田太郎，佐藤次郎，鈴木三郎"
               required
             />
           </div>

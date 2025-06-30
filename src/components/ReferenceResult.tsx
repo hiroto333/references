@@ -26,10 +26,10 @@ export default function ReferenceResult({ data }: ReferenceResultProps) {
 
     switch (data.type) {
       case ReferenceType.RESEARCH_REPORT:
-        return `${authorList}：${data.title}，${data.publisher}，Vol.${data.volume}, No.${data.number}, pp.${data.pages} (${data.year})．`
+        return `${authorList}：${data.title}，${data.publisher}，Vol.${data.volume}，No.${data.number}，pp.${data.pages} (${data.year})．`
 
       case ReferenceType.JOURNAL:
-        return `${authorList}：${data.title}，${data.publisher}，Vol.${data.volume}, No.${data.number}, pp.${data.pages}(${data.year})．`
+        return `${authorList}：${data.title}，${data.publisher}，Vol.${data.volume}，No.${data.number}，pp.${data.pages}(${data.year})．`
 
       case ReferenceType.BOOK:
         return `${authorList}：${data.title}，${data.bookPublisher} (${data.year})．`
