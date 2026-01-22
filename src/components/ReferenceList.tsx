@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Checkbox } from "../components/ui/checkbox"
-import { CopyIcon, TrashIcon, CheckIcon, RefreshCwIcon, BookIcon } from "lucide-react"
+import { CopyIcon, TrashIcon, CheckIcon, RefreshCwIcon, BookIcon, GripVerticalIcon } from "lucide-react"
 import { useReferences } from "../hooks/useReferences"
 import { toast } from "sonner"
 import { Alert, AlertDescription } from "../components/ui/alert"
@@ -14,6 +14,7 @@ export default function ReferenceList() {
   const { references, loading, deleteReference, loadReferences } = useReferences()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [copied, setCopied] = useState(false)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -70,6 +71,33 @@ export default function ReferenceList() {
     })
   }
 
+  // ドラッグ＆ドロップハンドラー
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index)
+  }
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === index) return
+    // ビジュアルフィードバックのみ（ローカル状態の更新はドロップ時）
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
+  }
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === targetIndex) return
+
+    // NOTE: 実際の順序変更はSupabaseにorder_indexカラムを追加する必要があります
+    // 現時点ではビジュアルフィードバックのみ表示
+    toast.info("並び替え機能", {
+      description: "現在の実装ではローカルでの並び替えのみ対応しています",
+    })
+    setDraggedIndex(null)
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-12">
@@ -81,7 +109,7 @@ export default function ReferenceList() {
 
   if (references.length === 0) {
     return (
-      <div className="p-12 text-center text-gray-500">
+      <div className="p-12 text-center text-gray-500 dark:text-gray-400">
         <div className="mb-4">
           <BookIcon className="h-16 w-16 mx-auto opacity-50" />
         </div>
@@ -100,7 +128,7 @@ export default function ReferenceList() {
             checked={selectedIds.size === references.length}
             onCheckedChange={handleSelectAll}
           />
-          <label htmlFor="select-all" className="text-sm font-medium">
+          <label htmlFor="select-all" className="text-sm font-medium dark:text-gray-200">
             すべて選択 ({references.length}件)
           </label>
         </div>
@@ -130,20 +158,33 @@ export default function ReferenceList() {
       </div>
 
       <div className="space-y-4">
-        {references.map((reference) => (
-          <Card key={reference.id} className="relative">
+        {references.map((reference, index) => (
+          <Card
+            key={reference.id}
+            className={`relative transition-all duration-200 ${draggedIndex === index ? "opacity-50 scale-[0.98]" : "hover:shadow-md"
+              } dark:bg-gray-700/50`}
+            draggable
+            onDragStart={() => handleDragStart(index)}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDragEnd={handleDragEnd}
+            onDrop={(e) => handleDrop(e, index)}
+          >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-3">
+                  {/* ドラッグハンドル */}
+                  <div className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <GripVerticalIcon className="h-5 w-5" />
+                  </div>
                   <Checkbox
                     checked={selectedIds.has(reference.id)}
                     onCheckedChange={(checked) => handleSelectReference(reference.id, checked as boolean)}
                   />
                   <div>
-                    <CardTitle className="text-lg">{reference.title}</CardTitle>
+                    <CardTitle className="text-lg dark:text-gray-100">{reference.title}</CardTitle>
                     <div className="flex items-center space-x-2 mt-1">
                       <Badge variant="secondary">{reference.type}</Badge>
-                      <span className="text-sm text-gray-500">{formatDate(reference.created_at)}</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(reference.created_at)}</span>
                     </div>
                   </div>
                 </div>
@@ -160,8 +201,8 @@ export default function ReferenceList() {
             </CardHeader>
 
             <CardContent>
-              <Alert className="bg-gray-50">
-                <AlertDescription className="font-mono text-sm break-words">
+              <Alert className="bg-gray-50 dark:bg-gray-800">
+                <AlertDescription className="font-mono text-sm break-words dark:text-gray-200">
                   {reference.formatted_text}
                 </AlertDescription>
               </Alert>
